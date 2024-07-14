@@ -1,0 +1,65 @@
+# Training Configuration
+trainer:
+
+  Random_forest:
+    train: True  # Train the model or not
+    parameters:
+       n_estimators: 500
+       max_leaf_nodes: 15      
+       n_jobs: -1  
+    grid_search: False # Use grid search or not
+    model_path: 'models/random_forest/'
+
+  Logistic_Regression:
+    train: True 
+    parameters:
+      C: 0.01
+      class_weight: {0: 0.25, 1: 1}
+      max_iter: 500
+      penalty: 'l2'
+    grid_search: False
+    model_path: 'models/logistic_regression/'
+
+  Neural_Network:
+    train: True
+    parameters:
+        hidden_layer_sizes: (20, 15, 15, 15)
+        solver: 'adam'
+        activation: 'relu'
+        learning_rate: "adaptive"
+        learning_rate_init: 0.001
+        alpha: 0.025
+        max_iter: 500
+        batch_size: 128
+    grid_search: False
+    model_path: 'models/neural_network/'
+
+
+# Evaluation
+evaluation:
+  train: True
+  validation: True
+  optimal_threshold: True # We use only training data to find optimal threshold
+
+  metric: # Evaluation metrics we interested in
+   pos:
+      f1-score: True
+      precision: True
+      recall: True
+   neg:    
+      f1-score: False
+      precision: False
+      recall: False
+   auc: False
+   macro_avg: True
+
+  # Plots to save in the evaluation folder
+  roc_curve: True
+  confusion_matrix: True
+  precision_recall_curve: True  
+  precision_recall_diff_threshold: True
+  path: 'evaluation/'
+  plot_path: 'evaluation/plots/'
+   
+
+

@@ -1,0 +1,37 @@
+import os
+import torch
+import yaml
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pandas as pd
+
+def load_config(config_path):
+    with open(config_path, 'r') as file:
+        config = yaml.safe_load(file)
+    return config
+
+def save_checkpoint(model, epoch, checkpoint_dir='models/focal_loss_checkpoints'):
+    if not os.path.exists(checkpoint_dir):
+        os.makedirs(checkpoint_dir)
+    checkpoint_path = os.path.join(checkpoint_dir, f'checkpoint_epoch_{epoch}.pth')
+    torch.save({
+        'epoch': epoch,
+        'model_state_dict': model.state_dict(),
+    }, checkpoint_path)
+    print(f"Checkpoint saved at epoch {epoch}")
+
+def load_checkpoint(model, checkpoint_path):
+    checkpoint = torch.load(checkpoint_path)
+    model.load_state_dict(checkpoint['model_state_dict'])
+    epoch = checkpoint['epoch']
+    print(f"Checkpoint loaded from epoch {epoch}")
+    return epoch
+
+def save_model_comparison(model_comparison, path):
+    model_comparison = pd.DataFrame(model_comparison).T
+    plt.figure(figsize=(model_comparison.shape[0] * 5, model_comparison.shape[1] * 2))
+    sns.set(font_scale=1.4) 
+    ax = sns.heatmap(model_comparison, annot=True, cmap='viridis', cbar=True, annot_kws={"size": 14}, fmt='.2f')
+    plt.title('Model Performance Comparison', fontsize=16)
+    plt.xticks(rotation=0, ha='center')
+    plt.savefig(path)

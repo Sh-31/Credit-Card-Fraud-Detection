@@ -5,7 +5,10 @@ __pycache__/
 
 # C extensions
 *.so
-
+*.pdf
+To do.txt 
+.venv/
+  
 # Distribution / packaging
 .Python
 build/

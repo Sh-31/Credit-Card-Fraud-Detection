@@ -34,25 +34,28 @@ def eval_confusion_matrix(y_pred,y_true, title="" , save_png=False,  path=""):
     plt.xlabel('Predicted')
     plt.ylabel('Truth')
     if save_png:
-        plt.savefig(f'{path}/{title}_confusion_matrix.png')
+        plt.savefig(f'{path}/{title} Confusion Matrix.png')
     else:
         plt.show()
+        
+    plt.close()    
 
 
-def eval_auc_precision_recall_curve(y_pred,y_true):
+def eval_auc_precision_recall_curve(y_pred_prob, y_true):
      """
      Get Area under curve of precision recal of precision recall curve
 
      Uasge:
      Auc of precision recall curve give good indicator of over all model peformance.
      """
-     precision, recall, thresholds = precision_recall_curve(y_score=y_pred,y_true=y_true)
-     return float(auc(precision , recall))
+     precision, recall, _ = precision_recall_curve(y_score=y_pred_prob,y_true=y_true)
+     
+     return float(auc(x=recall, y=precision))
 
 
-def eval_precision_recall_for_different_threshold(y_pred, y_true, title="" ,save_png=False, path=""):
+def eval_precision_recall_for_different_threshold(y_pred_prob, y_true, title="" ,save_png=False, path=""):
 
-    precision, recall, thresholds = precision_recall_curve(y_score=y_pred,y_true=y_true)
+    precision, recall, thresholds = precision_recall_curve(y_score=y_pred_prob,y_true=y_true)
     plt.figure(figsize=(8, 6))
     plt.plot(thresholds, precision[:-1], label='Precision', marker='.')
     plt.plot(thresholds, recall[:-1], label='Recall', marker='.')
@@ -62,10 +65,11 @@ def eval_precision_recall_for_different_threshold(y_pred, y_true, title="" ,save
     plt.legend()
 
     if save_png:
-        plt.savefig(f'{path}/{title}_precision_recall_for_different_threshold.png')
+        plt.savefig(f'{path}/{title} precision recall for different threshold.png')
     else:    
         plt.show()
 
+    plt.close() 
 
 def eval_classification_report_confusion_matrix(y_pred, y_true, title="" ,save_png=False, path="", digits=5 ):
 
@@ -81,26 +85,25 @@ def eval_classification_report_confusion_matrix(y_pred, y_true, title="" ,save_p
     sns.heatmap(cm, annot=False, fmt='d', cmap='Blues')
     for i, txt in enumerate(cm_flat):
         plt.text(i % 2 + 0.5, i // 2 + 0.5, f"{labels[i]}\n{txt}", ha='center', va='center', color='black')
-    plt.title(f'Confusion Matrix of {title} - {report_stats['1']['f1-score']}')
+    plt.title(f'Confusion Matrix of {title}')
     plt.xlabel('Predicted')
     plt.ylabel('Truth')
 
     if save_png: 
-        plt.savefig(f'{path}/{title}_confusion_matrix.png')
+        plt.savefig(f'{path}/{title} Confusion Matrix.png')
     else: 
         plt.show()
 
-    # report_stats['auc'] = eval_auc_precision_recall_curve(y_pred, y_true)
-
+    plt.close()
     return report_stats
 
 
-def eval_precision_recall_curve(y_pred,y_true, title="", save_png=False, path=""):
+def eval_precision_recall_curve(y_pred_prob,y_true, title="", save_png=False, path=""):
     '''
     Plot precision recall curve
     '''
 
-    precision, recall, thresholds = precision_recall_curve(y_score=y_pred,y_true=y_true)
+    precision, recall, thresholds = precision_recall_curve(y_score=y_pred_prob,y_true=y_true)
     plt.figure(figsize=(8, 8))
     plt.plot(recall, precision, color='darkorange', lw=2, label=f'Precision-Recall curve')
     plt.xlabel('Recall')
@@ -108,9 +111,10 @@ def eval_precision_recall_curve(y_pred,y_true, title="", save_png=False, path=""
     plt.title(f'{title} Precision-Recall Curve')
     plt.legend()
     if save_png:
-        plt.savefig(f'{path}/{title}_precision_recall_curve.png')
+        plt.savefig(f'{path}/{title} precision recall area under curve.png')
     else:    
         plt.show()
+    plt.close()    
 
 def eval_best_threshold(y_pred,y_true , with_repect_to="f1_score"): 
     """
@@ -156,7 +160,6 @@ def eval_update_model_stats(model_comparison , model_name, report_val, metric_co
             "Precision Positive class": report_val['1']['precision'],
             "Recall Positive class": report_val['1']['recall'],   
             "F1 Score Average": report_val['macro avg']['f1-score'],
-            "AUC Precision Recal": report_val['auc']
             }
     else:
        model_comparison[model_name] = {}
@@ -171,9 +174,7 @@ def eval_update_model_stats(model_comparison , model_name, report_val, metric_co
        if metric_config['macro_avg']: 
            model_comparison[model_name]['F1 macro avg'] = report_val['macro avg']['f1-score']
                    
-       if metric_config['auc']:
-           model_comparison[model_name]['AUC Precision Recal'] = report_val['auc']
-
+     
     return model_comparison
 
 
@@ -186,19 +187,29 @@ def evaluate_model(model, model_comparison, path, title, X_train, y_train, x_val
         os.makedirs(eval_plots_path)
 
     save_cm_plots = evaluation_config['confusion_matrix']
-    save_pr_rc_th_plots = evaluation_config['precision_recall_diff_threshold']
+    save_pr_rc_th_plots = evaluation_config['precision_recall_threshold']
+    save_roc_curve = evaluation_config['roc_curve']
     if evaluation_config['train'] == True:
 
         y_train_pred = model.predict(X_train)
+        y_train_pred_proba = model.predict_proba(X_train)[:,1]
 
         eval_classification_report_confusion_matrix(y_train, y_train_pred, title + ' train', save_png=save_cm_plots, path=eval_plots_path)
-        eval_precision_recall_for_different_threshold(y_pred=y_train_pred, y_true=y_train, save_png=save_pr_rc_th_plots, path=eval_plots_path)
+        eval_precision_recall_for_different_threshold(y_pred_prob=y_train_pred_proba, y_true=y_train,title=title+' train',save_png=save_pr_rc_th_plots, path=eval_plots_path)
+        eval_precision_recall_curve(y_pred_prob=y_train_pred_proba, y_true=y_train, title=title + ' train', save_png=save_roc_curve, path=eval_plots_path)
 
     if evaluation_config['validation'] == True:
 
         y_val_pred = model.predict(x_val)
+        y_val_pred_proba = model.predict_proba(x_val)[:,1]
         report_val = eval_classification_report_confusion_matrix(y_val, y_val_pred, title + ' validation', save_png=save_cm_plots, path=eval_plots_path)
+        eval_precision_recall_curve(y_pred_prob=y_val_pred_proba, y_true=y_val, title=title + ' validation', save_png=save_roc_curve, path=eval_plots_path)
         model_comparison = eval_update_model_stats(model_comparison, title,  report_val, evaluation_config['metric'])
+
+
+        if evaluation_config['metric']['PR_AUC'] == True:
+            y_val_pred_proba = model.predict_proba(x_val)[:,1]
+            model_comparison[title]['PR AUC'] = eval_auc_precision_recall_curve(y_pred_prob=y_val_pred_proba, y_true=y_val)
 
         if evaluation_config['optimal_threshold'] == True: # we use only training data to find optimal threshold
 
@@ -208,5 +219,9 @@ def evaluate_model(model, model_comparison, path, title, X_train, y_train, x_val
             y_val_pred = eval_predict_with_threshold(model=model, x=x_val, threshold=optimal_threshold)
             report_val = eval_classification_report_confusion_matrix(y_pred=y_val_pred,y_true=y_val, title= title + ' val with optimal threshold', save_png=save_cm_plots, path=eval_plots_path)
             model_comparison = eval_update_model_stats(model_comparison, title + ' optimal threshold',  report_val ,  evaluation_config['metric'])
+            
+            if evaluation_config['metric']['PR_AUC'] == True: # It will same as validation (0.5 threshold)
+                y_val_pred_proba = model.predict_proba(x_val)[:,1]
+                model_comparison[title + ' optimal threshold']['PR AUC'] = eval_auc_precision_recall_curve(y_pred_prob=y_val_pred_proba, y_true=y_val)
 
     return model_comparison , optimal_threshold

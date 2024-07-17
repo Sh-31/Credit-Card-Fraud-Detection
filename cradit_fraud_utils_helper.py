@@ -29,9 +29,12 @@ def load_checkpoint(model, checkpoint_path):
 
 def save_model_comparison(model_comparison, path):
     model_comparison = pd.DataFrame(model_comparison).T
-    plt.figure(figsize=(model_comparison.shape[0] * 5, model_comparison.shape[1] * 2))
-    sns.set(font_scale=1.4) 
-    ax = sns.heatmap(model_comparison, annot=True, cmap='viridis', cbar=True, annot_kws={"size": 14}, fmt='.2f')
-    plt.title('Model Performance Comparison', fontsize=16)
+    plt.figure(figsize=(16, 10))
+    sns.set(font_scale=1.2)
+    ax = sns.heatmap(model_comparison, annot=True, cmap='viridis', cbar=True, annot_kws={"size": 12}, fmt='.2f')
+    plt.title('Model Performance Comparison', fontsize=20, pad=20)
     plt.xticks(rotation=0, ha='center')
+    plt.yticks(rotation=0)
+    plt.tight_layout()
     plt.savefig(path)
+    plt.close()

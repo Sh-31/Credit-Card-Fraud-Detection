@@ -7,7 +7,7 @@ trainer:
        n_estimators: 400
        min_samples_leaf: 5
        min_samples_split: 2
-       class_weight: {0: 0.2, 1: 0.8}
+       class_weight: {0: 0.20, 1: 0.8}
        bootstrap: True
        n_jobs: -1  
     Randomized_Search: False # Use grid search or not
@@ -16,8 +16,8 @@ trainer:
     train: True 
     parameters:
       C: 0.1
-      class_weight:  {0: 0.25, 1: 0.75}
-      max_iter: 900
+      class_weight:  {0: 0.20, 1: 0.80}
+      max_iter: 500
       penalty: 'l2'
       solver: 'sag'
     grid_search: False
@@ -28,7 +28,7 @@ trainer:
       hidden_layer_sizes: (128, 64)
       activation: 'tanh'
       solver: 'sgd'
-      alpha: 0.01
+      alpha: 0.1
       learning_rate_init: 0.1
       batch_size: 512
       max_iter: 500
@@ -38,7 +38,7 @@ trainer:
     train: True
     parameters:
       voting: 'soft'
-      weights: [1, 4, 2]
+      weights: [0.04, 0.80 , 0.16]
       fit_base_estimators: False
       use_clones: False
 
@@ -60,7 +60,7 @@ evaluation:
    PR_AUC: True
    macro_avg: True
 
-  # Plots to save in the evaluation folder
+  # Plots to save in the evaluation folder (or just show them)
   roc_curve: True
   confusion_matrix: True
   precision_recall_threshold: True  

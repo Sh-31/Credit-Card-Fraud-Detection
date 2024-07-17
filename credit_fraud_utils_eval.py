@@ -3,7 +3,7 @@ import seaborn as sns
 from numpy import argmax
 from sklearn.metrics import classification_report , precision_recall_curve ,confusion_matrix , auc
 import matplotlib.pyplot as plt
-
+plt.rcParams['figure.max_open_warning'] = 100
 
 def eval_predict_with_threshold(model , x , threshold=0.5):
     """
@@ -34,11 +34,11 @@ def eval_confusion_matrix(y_pred,y_true, title="" , save_png=False,  path=""):
     plt.xlabel('Predicted')
     plt.ylabel('Truth')
     if save_png:
-        plt.savefig(f'{path}/{title} Confusion Matrix.png')
+        plt.savefig(f'{path}/{title} Confusion Matrix.png') 
     else:
         plt.show()
         
-    plt.close()    
+     
 
 
 def eval_auc_precision_recall_curve(y_pred_prob, y_true):
@@ -69,8 +69,6 @@ def eval_precision_recall_for_different_threshold(y_pred_prob, y_true, title="" 
     else:    
         plt.show()
 
-    plt.close() 
-
 def eval_classification_report_confusion_matrix(y_pred, y_true, title="" ,save_png=False, path="", digits=5 ):
 
     print(f'{title} Classification Report')
@@ -94,7 +92,6 @@ def eval_classification_report_confusion_matrix(y_pred, y_true, title="" ,save_p
     else: 
         plt.show()
 
-    plt.close()
     return report_stats
 
 
@@ -111,10 +108,9 @@ def eval_precision_recall_curve(y_pred_prob,y_true, title="", save_png=False, pa
     plt.title(f'{title} Precision-Recall Curve')
     plt.legend()
     if save_png:
-        plt.savefig(f'{path}/{title} precision recall area under curve.png')
+        plt.savefig(f'{path}/{title} precision recall area under curve.png') 
     else:    
-        plt.show()
-    plt.close()    
+        plt.show()   
 
 def eval_best_threshold(y_pred,y_true , with_repect_to="f1_score"): 
     """

@@ -93,13 +93,14 @@ Note:
 
 - The optimal threshold calculated by finding highest F1-score and it's threshold **in training data only**.
 
+------
 #### Focal-loss 
 
 Focal Loss is a specialized loss function designed to address the class imbalance problem commonly encountered in tasks like object detection. It was introduced in the paper "Focal Loss for Dense Object Detection." The main idea is to focus more on hard-to-classify examples while reducing the loss contribution from easy-to-classify examples. This is achieved through two parameter 𝛼 (alpha) and 𝛾 (gamma).
 
 ![focal-loss](docs/focal_loss.png)
 
-### Focal-loss results 
+#### Focal-loss results 
 
 * I tried Server combination of Alpha (0.80-0.99, +0.5) and gamma (0-4, +1).
 
@@ -111,6 +112,6 @@ Focal Loss is a specialized loss function designed to address the class imbalanc
   * Alpth and gamma sometimes unstables train using batchnorm make this effect less occur and switching from Adam to SGD also. 
   * High gamma (5~7) gives very noisey loss curve.
 
-
+####  Training and the validation curves
 ![loss](docs/image.png)
 ![AUC-f1-score](docs/image-2.png)

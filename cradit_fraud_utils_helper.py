@@ -10,7 +10,8 @@ def load_config(config_path):
         config = yaml.safe_load(file)
     return config
 
-def save_checkpoint(model, epoch, checkpoint_dir='models/focal_loss_checkpoints'):
+def save_checkpoint(model, epoch, checkpoint_dir='models/focal_loss_checkpoints', title=''):
+    checkpoint_dir = checkpoint_dir + title
     if not os.path.exists(checkpoint_dir):
         os.makedirs(checkpoint_dir)
     checkpoint_path = os.path.join(checkpoint_dir, f'checkpoint_epoch_{epoch}.pth')

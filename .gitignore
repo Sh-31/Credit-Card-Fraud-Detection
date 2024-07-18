@@ -8,6 +8,7 @@ __pycache__/
 *.pdf
 To do.txt 
 .venv/
+modeling.ipynb
   
 # Distribution / packaging
 .Python

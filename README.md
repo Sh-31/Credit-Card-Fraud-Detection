@@ -115,3 +115,16 @@ Focal Loss is a specialized loss function designed to address the class imbalanc
 ####  Training and the validation curves
 ![loss](docs/image.png)
 ![AUC-f1-score](docs/image-2.png)
+
+
+
+#### Smote and undersampling technique 
+
+* SMOTE is an oversampling technique that generates synthetic samples from the minority class.
+
+* I tried SMOTE , random-over-sampler and under-sampler however this techniques poor results on validation data.
+
+* Smote (0.05-ratio) results:
+ ![somte_0.05](docs/Smote_0.05.png)
+* RandomUnderSampler (0.05-ratio) results:
+ ![under_0.05](docs/Under_0.05.png)

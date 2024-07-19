@@ -13,7 +13,7 @@ from sklearn.preprocessing import RobustScaler
 from sklearn.model_selection import GridSearchCV , StratifiedKFold , RandomizedSearchCV
 from sklearn.metrics import make_scorer, f1_score
 from cradit_fraud_utils_helper import load_config ,  save_model_comparison
-from credit_fraud_utils_data import load_data, scale_data
+from credit_fraud_utils_data import load_data, scale_data, balance_data_transformation
 from credit_fraud_utils_eval import *
 
 
@@ -195,6 +195,10 @@ if __name__ == "__main__":
     X_train, y_train, X_val, y_val = load_data(config)
     X_train_scaled, X_val_scaled = scale_data(X_train, X_val, config['preprocessing']['scaler_type'])
 
+    if config['balancing']['do_balance']: # balance data
+        X_train_scaled , y_train = balance_data_transformation(X_train_scaled, y_train, balance_type= config['balancing']['method'], sampling_strategy=config['balancing']['sampling_strategy'], k=5,  random_state=RANDOM_SEED)
+        X_train = X_train_scaled.copy()
+    
     model_comparison = {} # model comparison stats dictionary
     models = {} # trained models dictionary
 

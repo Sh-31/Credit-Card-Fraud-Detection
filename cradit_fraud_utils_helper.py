@@ -1,6 +1,7 @@
 import os
 import torch
 import yaml
+import joblib
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -28,6 +29,18 @@ def load_checkpoint(model, checkpoint_path):
     print(f"Checkpoint loaded from epoch {epoch}")
     return epoch
 
+
+def load_model(file_path):
+    try:
+        model = joblib.load(file_path)
+        return model
+    except FileNotFoundError:
+        print(f"Error: The file at {file_path} was not found.")
+    except joblib.externals.loky.process_executor.TerminatedWorkerError:
+        print("Error: The file could not be loaded.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
 def save_model_comparison(model_comparison, path):
     model_comparison = pd.DataFrame(model_comparison).T
     plt.figure(figsize=(16, 10))
@@ -39,3 +52,5 @@ def save_model_comparison(model_comparison, path):
     plt.tight_layout()
     plt.savefig(path)
     plt.close()
+
+

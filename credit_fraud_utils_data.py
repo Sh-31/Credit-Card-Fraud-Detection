@@ -60,6 +60,14 @@ def load_data(config):
 
     return X_train, y_train, X_val, y_val
 
+
+def load_test(config):
+    test_data = pd.read_csv(config['dataset']['test']['path'])
+    X_test = test_data.drop(config['dataset']['target'], axis=1)
+    y_test = test_data[config['dataset']['target']]
+    return X_test, y_test
+
+
 def balance_data_transformation(X_train, y_train, balance_type='smote',sampling_strategy='auto',k=5,random_state=None):
     """
     Balance the input training data using the specified balancing strategy.
@@ -88,13 +96,16 @@ def balance_data_transformation(X_train, y_train, balance_type='smote',sampling_
     if isinstance(y_train, pd.DataFrame):
         y_train = y_train.values.ravel() 
     
+    print("Dataset before balancing:")
+    print(f"Number of Non-fraud transactions: {len(y_train[y_train == 0])}")
+    print(f"Number of fraud transactions:     {len(y_train[y_train == 1])}")
 
     if balance_type == 'under':
         sampler = RandomUnderSampler(sampling_strategy=sampling_strategy, random_state=random_state)
     elif balance_type == 'over':
         sampler = RandomOverSampler(sampling_strategy=sampling_strategy, random_state=random_state)
     elif balance_type == 'smote':
-        sampler = SMOTE(random_state=random_state, sampling_strategy=sampling_strategy, k_neighbors=k, n_jobs=-1)
+        sampler = SMOTE(random_state=random_state, sampling_strategy=sampling_strategy, k_neighbors=k)
     elif balance_type == 'SMOTEENN':
         sampler = SMOTEENN(
                           random_state=random_state, 
@@ -102,7 +113,6 @@ def balance_data_transformation(X_train, y_train, balance_type='smote',sampling_
                           smote=SMOTE(random_state=random_state,
                                       sampling_strategy=sampling_strategy,
                                       k_neighbors=k),  
-                           n_jobs=-1
                          )
     elif balance_type == 'SMOTETomek':
         sampler = SMOTETomek(
@@ -119,4 +129,8 @@ def balance_data_transformation(X_train, y_train, balance_type='smote',sampling_
     # Fit and resample the training data using the chosen sampler
     X_resampled, y_resampled = sampler.fit_resample(X_train, y_train)
     
+    print("\n Dataset after balancing:")
+    print(f"Number of Non-fraud transactions: {len(y_resampled[y_resampled == 0])}")
+    print(f"Number of fraud transactions:     {len(y_resampled[y_resampled == 1])}")
+
     return X_resampled, y_resampled

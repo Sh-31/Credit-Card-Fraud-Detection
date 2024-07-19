@@ -35,7 +35,7 @@ trainer:
     Randomized_Search: False
 
   Voting_Classifier: # Voting Classifier (MLP, Random Forest, Logistic Regression)
-    train: True
+    train: False
     parameters:
       voting: 'soft'
       weights: [0.04, 0.80 , 0.16]

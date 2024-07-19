@@ -16,7 +16,7 @@ preprocessing:
   scaler_type: robust
 
 balancing:
-  do_balance: True
+  do_balance: False
   method: under # over - smote - under
   sampling_strategy: 0.05
 

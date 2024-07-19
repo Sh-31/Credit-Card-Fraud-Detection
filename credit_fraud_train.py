@@ -7,6 +7,7 @@ import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.neural_network import MLPClassifier
+from sklearn.neighbors import KNeighborsClassifier
 from mlxtend.classifier import EnsembleVoteClassifier 
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import RobustScaler
@@ -59,6 +60,47 @@ def train_random_forest(X_train, y_train, X_val, y_val, random_seed, model_compa
     model_comparison , optimal_threshold = evaluate_model(rf, model_comparison, path, 'Random Forest', X_train, y_train, X_val, y_val, trainer['evaluation'])
 
     return {"model": rf ,  "parameters": parameters, "threshold": optimal_threshold} 
+
+
+def train_knn(X_train, y_train, X_val, y_val, random_seed, model_comparison, trainer):
+
+    if trainer['trainer']['KNN']['grid_search'] == True:
+        param_distributions = {
+            'n_neighbors': [3, 5, 7, 9, 11, 13, 15, 17],
+            'weights': ['uniform', 'distance'],
+            'algorithm': ['auto', 'ball_tree', 'kd_tree', 'brute'],
+        }
+
+        stratified_kfold = StratifiedKFold(n_splits=3, shuffle=True, random_state=random_seed)
+        scorer = make_scorer(f1_score, pos_label=1)
+
+        random_search = RandomizedSearchCV(
+            estimator=KNeighborsClassifier(n_jobs=-1),
+            param_distributions=param_distributions,
+            scoring=scorer,
+            cv=stratified_kfold,
+            n_iter=20,  
+            n_jobs=-1,
+            verbose=2,
+            random_state=random_seed 
+        )
+
+        random_search.fit(X_train, y_train)
+
+        parameters = random_search.best_params_
+        print("Best Hyperparameters for KNN:", parameters)
+    else:
+        parameters = trainer['trainer']['KNN']['parameters']
+
+
+    knn = KNeighborsClassifier(**parameters, n_jobs=-1)
+
+    knn.fit(X_train, y_train)
+
+    model_comparison , _ = evaluate_model(knn, model_comparison, path, 'KNN', X_train, y_train, X_val, y_val, trainer['evaluation'])
+
+    return {"model": knn , "parameters": parameters}
+
 
 
 def train_logistic_regression(X_train_scaled, y_train, X_val_scaled, y_val, random_seed, model_comparison,  trainer):
@@ -216,6 +258,9 @@ if __name__ == "__main__":
 
     if trainer['trainer']['Neural_Network']['train']:
         models['Neural_Network'] = train_neural_network(X_train_scaled, y_train, X_val_scaled, y_val, RANDOM_SEED, model_comparison, trainer)    
+
+    if trainer['trainer']['KNN']['train']:
+        models['KNN'] = train_knn(X_train_scaled, y_train, X_val_scaled, y_val, RANDOM_SEED, model_comparison, trainer)
 
     if trainer['trainer']['Voting_Classifier']['train']:
         models['Voting_Classifier'] = train_voting_classifier(X_train, y_train, X_val, y_val, models, RANDOM_SEED, model_comparison, trainer)

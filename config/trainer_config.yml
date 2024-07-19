@@ -34,6 +34,15 @@ trainer:
       max_iter: 500
     Randomized_Search: False
 
+  KNN:
+    train: False
+    parameters:
+      n_neighbors: 3
+      weights: 'distance'
+      algorithm: 'kd_tree'
+    optimal_threshold: False 
+    grid_search: False    
+
   Voting_Classifier: # Voting Classifier (MLP, Random Forest, Logistic Regression)
     train: True
     parameters:

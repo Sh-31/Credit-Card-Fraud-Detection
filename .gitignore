@@ -5,7 +5,7 @@ __pycache__/
 
 # C extensions
 *.so
-*.pdf
+15 Project #2 - Binary Classification - Credit Card Fraud Detection.pdf
 To do.txt 
 .venv/
 modeling.ipynb

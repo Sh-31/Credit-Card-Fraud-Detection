@@ -1,0 +1,86 @@
+\documentclass[12pt]{article}
+\usepackage[margin=0.75in]{geometry}
+\geometry{a4paper}
+\usepackage[T1]{fontenc} % Support Icelandic Characters
+\usepackage[utf8]{inputenc} % Support Icelandic Characters
+\usepackage{graphicx} % Support for including images
+\usepackage{hyperref} % Support for hyperlinks
+\usepackage{listings}
+%------------------------------------------------------------------
+% Titill
+%------------------------------------------------------------------
+\title{
+    \vspace{0.5 cm}
+    Credit Card Fraud Detection Project Report
+}
+
+
+%------------------------------------------------------------------
+% Skjal byrjar hér
+%------------------------------------------------------------------
+\begin{document}
+\maketitle 
+
+\section{Introduction}
+
+This project focuses on developing a model to detect credit card fraud using a highly imbalanced dataset from Kaggle, which includes 284,807 credit card transactions with only 492 identified as fraudulent. The extreme imbalance,\textbf{ where fraudulent transactions make up only 0.17\% of the total}, poses a significant challenge for traditional machine learning techniques.
+
+\hfill \break
+To address the class imbalance and improve the detection of fraudulent transactions, \textbf{this project implements three approaches: a voting classifier, a neural network with focal loss, and a synthetic minority oversampling technique (SMOTE).}
+
+\section{Data Analysis}
+
+It \textbf{contains only numerical input variables} which are the result of a PCA transformation. Features V1, V2, … V28 are the principal components obtained with PCA, the only features which have not been transformed with PCA are 'Time' and 'Amount'. Feature 'Time' contains the seconds elapsed between each transaction and the first transaction in the dataset. The feature 'Amount' is the transaction Amount. Feature 'Class' is the response variable and it takes value 1 in case of fraud and 0 otherwise.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.40\linewidth]{class_Ratio.png}
+    \caption{check class imbalance}
+    \label{fig: Check class imbalance}
+\end{figure}
+
+\section{Data Correlation}
+
+As you can see in Figure \ref{fig:Correlation Matrix}, There are different correlations or patterns between the feature and each class.    
+
+\hfill \break
+\noindent\textbf{Fraud Transactions (Left Heatmap)}
+
+\textbf{Strong Correlations:}
+\begin{itemize}
+    \item There are noticeable blocks of strong positive correlations among several variables.
+    \item Variables such as V1, V2, V3, V4, V5, V6, V7, V8, V9, V10, V11, and V12 show significant correlations among themselves. This is evident from the bright yellow blocks in these regions.
+    \item Variables like V16, V17, and V18 also show strong correlations with each other.
+\end{itemize}
+
+\bigskip
+
+\noindent\textbf{Non-Fraud Transactions (Right Heatmap)}
+
+\textbf{Weak Correlations:}
+\begin{itemize}
+    \item The non-fraud transactions heatmap shows mostly weak correlations among variables. The majority of the correlations are close to zero, indicated by the dominance of green and blue colors.
+\end{itemize}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{Correlation Matrix (class separate).png}
+    \caption{Correlation matrix separate class}
+    \label{fig:Correlation Matrix}
+\end{figure}
+
+\newpage
+\include{visualize}
+\newpage
+\include{feature importances}
+\newpage
+\include{Modeling}
+\newpage
+\include{smote}
+%------------------------------------------------------------------
+% Skjal endar hér
+%------------------------------------------------------------------
+
+% Heimildir
+% \bibliographystyle{plain}
+% \bibliography{references}
+\end{document}

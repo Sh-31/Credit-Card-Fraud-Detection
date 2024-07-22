@@ -10,7 +10,7 @@ trainer:
        class_weight: {0: 0.20, 1: 0.8}
        bootstrap: True
        n_jobs: -1  
-    Randomized_Search: False # Use grid search or not
+    Randomized_Search: False # Use Randomized Search or not
 
   Logistic_Regression:
     train: True 
@@ -44,7 +44,7 @@ trainer:
     grid_search: False    
 
   Voting_Classifier: # Voting Classifier (MLP, Random Forest, Logistic Regression)
-    train: True
+    train: True      # Need to be (MLP, Random Forest, Logistic Regression) train : True  
     parameters:
       voting: 'soft'
       weights: [0.04, 0.80 , 0.16]
@@ -70,11 +70,10 @@ evaluation:
    macro_avg: True
 
   # Plots to save in the evaluation folder (or just show them)
-  roc_curve: True
-  confusion_matrix: True
-  precision_recall_threshold: True  
+  roc_curve: True  # Need Train or validation to be True
+  confusion_matrix: True # Need Train or Validation to be True
+  precision_recall_threshold: True  # Need Train to be True
   path: 'evaluation/'
   plot_path: 'evaluation/plots/'
-   
 
 

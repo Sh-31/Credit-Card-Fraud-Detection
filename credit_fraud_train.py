@@ -179,16 +179,16 @@ def train_neural_network(X_train_scaled, y_train, X_val_scaled, y_val, random_se
 
     else:
         # load parameters from config file
-        parameters = trainer['trainer']['Neural_Network']['parameters']
+        best_params = trainer['trainer']['Neural_Network']['parameters']
     
         MLP = MLPClassifier(
-            hidden_layer_sizes=eval(parameters['hidden_layer_sizes']), # eval to convert string to tuple
-            activation=parameters['activation'],
-            solver=parameters['solver'],
-            alpha=parameters['alpha'],
-            batch_size=parameters['batch_size'],
-            learning_rate_init=parameters['learning_rate_init'],
-            max_iter=parameters['max_iter'],
+            hidden_layer_sizes=eval(best_params['hidden_layer_sizes']), # eval to convert string to tuple
+            activation=best_params['activation'],
+            solver=best_params['solver'],
+            alpha=best_params['alpha'],
+            batch_size=best_params['batch_size'],
+            learning_rate_init=best_params['learning_rate_init'],
+            max_iter=best_params['max_iter'],
             random_state=random_seed
         )
 
@@ -196,24 +196,35 @@ def train_neural_network(X_train_scaled, y_train, X_val_scaled, y_val, random_se
 
     model_comparison, optimal_threshold = evaluate_model(MLP, model_comparison, path, 'Neural Network', X_train_scaled, y_train, X_val_scaled, y_val, trainer['evaluation'])
 
-    return {"model": MLP ,  "parameters": parameters, "threshold": optimal_threshold}
+    return {"model": MLP ,  "parameters": best_params, "threshold": optimal_threshold}
 
 def train_voting_classifier(X_train, y_train, x_val, y_val, models, random_seed, model_comparison, trainer):
     scaler = RobustScaler()
     X_train_scaled = scaler.fit_transform(X_train)  # make scaler learn statistics from training data
     param = trainer['trainer']['Voting_Classifier']['parameters']
 
-    voting_classifier = EnsembleVoteClassifier(
-        clfs=[
-            make_pipeline(scaler, models['Logistic_Regression']['model']),
-            make_pipeline(scaler, models['Neural_Network']['model']),
-            models['Random_forest']['model'],
-        ],
-        weights=param['weights'],
-        fit_base_estimators=param['fit_base_estimators'],
-        use_clones=param['use_clones'],
-        voting=param['voting'],
-    )
+    # Ensure models are present in the provided dictionary
+    required_models = ['Logistic_Regression', 'Neural_Network', 'Random_forest']
+    missing_models = [model for model in required_models if model not in models]
+    
+    if missing_models:
+        raise ValueError(f"The following required models are missing: {', '.join(missing_models)}")
+
+    try:
+        voting_classifier = EnsembleVoteClassifier(
+            clfs=[
+                make_pipeline(scaler, models['Logistic_Regression']['model']),
+                make_pipeline(scaler, models['Neural_Network']['model']),
+                models['Random_forest']['model'],
+            ],
+            weights=param['weights'],
+            fit_base_estimators=param['fit_base_estimators'],
+            use_clones=param['use_clones'],
+            voting=param['voting'],
+        )
+    except Exception as e:
+        raise RuntimeError(f"Failed to initialize the voting classifier: {e}")
+
 
     voting_classifier.fit(X_train, y_train) #  no refiting required here
 
@@ -271,9 +282,10 @@ if __name__ == "__main__":
     print('Model saved at: {}'.format(model_path))
     print('Evaluation plots saved at: {}evaluation/plot'.format(path))
 
-    # Save the model comparison
-    model_comparison_path = path + "model_comparison-(validation dataset).png"
-    save_model_comparison(model_comparison, model_comparison_path)
+    if  model_comparison:
+        # Save the model comparison
+        model_comparison_path = path + "model_comparison-(validation dataset).png"
+        save_model_comparison(model_comparison, model_comparison_path)
 
-    print('\nModels comparison:\n')
-    print(pd.DataFrame(model_comparison).T.to_markdown())
+        print('\nModels comparison:\n')
+        print(pd.DataFrame(model_comparison).T.to_markdown())

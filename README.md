@@ -10,7 +10,8 @@
 Install the required packages
 
 ```
-pip install -r requirements.txt
+pip install -r requirements.txt (for windows)  
+pip3 install -r requirements.txt (for linux)
 ```
 
 #### Repo structure and File descriptions

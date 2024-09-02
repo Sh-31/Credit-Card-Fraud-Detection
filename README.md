@@ -10,8 +10,7 @@
 Install the required packages
 
 ```
-pip install -r requirements.txt (for windows)  
-pip3 install -r requirements.txt (for linux)
+pip3 install -r requirements.txt
 ```
 
 #### Repo structure and File descriptions
@@ -80,8 +79,7 @@ credit Card Fraud Detection/
 
 ```shall
 cd Credit-Card-Fraud-Detection
-python credit_fraud_train.py --config config.yml --trainer  trainer_config.yml   (for windows)  
-python3 credit_fraud_train.py --config config.yml --trainer  trainer_config.yml  (for linux)
+python3 credit_fraud_train.py --config config.yml --trainer  trainer_config.yml
 ```        
 
 **Note: install required packages as above first**
